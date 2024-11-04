@@ -1,0 +1,149 @@
+---
+title: "p8105_hw5_ly2633"
+author: "Leila Yan"
+date: "2024-11-04"
+output: html_document
+---
+```{r}
+# Load libraries
+library(tidyverse)
+library(ggplot2)
+
+```
+
+
+# Problem 1
+
+# Problem 2
+Conduct a simulation to explore power in a one-sample t-test.
+For each dataset, save 𝜇̂ and the p-value arising from a test of 𝐻:𝜇=0using 𝛼=0.05
+Hint: to obtain the estimate and p-value, use broom::tidy to clean the output of t.test.
+```{r}
+onesample_t_test = function(mu){
+  n=30
+  sigma = 5
+  x=rnorm(n,mean=mu,sd=sigma)
+  
+  t_test_output = t.test(x,mu=0, conf.level = 0.95)|>
+              broom::tidy()
+  
+  return(t_test_output)
+}
+
+onesample_t_test_sim = 
+  expand_grid(
+    mu = c(0:6),
+    iter = 1:5000
+  ) %>%
+  mutate(
+    ttest_output = map(mu, onesample_t_test)
+  ) %>%
+  unnest(ttest_output)
+```
+
+Make a plot showing the proportion of times the null was rejected (the power of the test) on the y axis and the true value of 𝜇on the x axis. Describe the association between effect size and power.
+
+Make a plot showing the average estimate of 𝜇̂ 
+on the y axis and the true value of 𝜇
+on the x axis. Make a second plot (or overlay on the first) the average estimate of 𝜇̂ 
+only in samples for which the null was rejected on the y axis and the true value of 𝜇
+on the x axis. Is the sample average of 𝜇̂ 
+across tests for which the null is rejected approximately equal to the true value of 𝜇
+? Why or why not?
+```{r}
+onesample_t_test_sim %>%
+  mutate(
+    reject = ifelse(p.value < 0.05, 1, 0)
+  )%>%
+  group_by(mu,reject) %>%
+  filter(reject == 1)%>%
+  summarise(reject_count =n())%>%
+  mutate(power = reject_count/5000)%>%
+  ggplot(aes(x=mu, y=power))+
+  geom_point()+
+  geom_line()+
+  labs(x="Mean")
+```
+
+
+# Problem 3
+Describe the raw data.
+```{r}
+# load the data
+homicide_data = 
+  read.csv("homicide-data.csv") %>%
+  janitor::clean_names()
+
+```
+
+
+```{r}
+# Create a city_state variable (e.g. “Baltimore, MD”)
+homicide_data = homicide_data %>%
+  mutate(state = ifelse(city == "Seattle", "WA", state),
+         city_state = paste(city, state, sep=", "))
+
+# Summarize within cities to obtain the total number of homicides and the number of unsolved homicides(those for which the disposition is “Closed without arrest” or “Open/No arrest”).
+totnumber_homicides = 
+  homicide_data %>%
+  group_by(city_state) %>%
+  summarise(totnumber_homicide = n())
+
+totnumber_unsolved =
+  homicide_data %>%
+  group_by(city_state) %>%
+  filter(disposition %in% c("Open/No arrest", "Closed without arrest"))|>
+  summarise(totnumber_unsolved = n())
+
+# Join the the total number of homicides and the number of unsolved homicides
+total_counts = 
+  totnumber_homicides %>%
+  left_join(totnumber_unsolved)
+
+total_counts
+```
+
+
+For the city of Baltimore, MD, use the prop.test function to estimate the proportion of homicides that are unsolved; save the output of prop.test as an R object, apply the broom::tidy to this object and pull the estimated proportion and confidence intervals from the resulting tidy dataframe.
+```{r}
+Baltimore_data = total_counts %>%
+  filter(city_state == "Baltimore, MD")
+
+prop.test(n = pull(Baltimore_data, totnumber_homicide), 
+          x = pull(Baltimore_data, totnumber_unsolved)) %>%
+  broom::tidy() %>%
+  select(estimate, conf.low, conf.high)
+```
+
+Now run prop.test for each of the cities in your dataset, and extract both the proportion of unsolved homicides and the confidence interval for each. Do this within a “tidy” pipeline, making use of purrr::map, purrr::map2, list columns and unnest as necessary to create a tidy dataframe with estimated proportions and CIs for each city.
+```{r}
+# Run prop.test and create a tidy dataframe with estimated proportions and CIs for each city
+# Filter out rows with zero or missing values for homicide counts
+city_proportion_estimates = total_counts %>%
+  filter(totnumber_homicide > 0 & totnumber_unsolved >= 0) %>%
+  mutate(test_result = purrr::map2(totnumber_unsolved, totnumber_homicide, 
+                                   ~ prop.test(.x, .y))) %>%
+  mutate(test_result = purrr::map(test_result, broom::tidy)) %>%
+  unnest(test_result) %>%
+  select(city_state, estimate, conf.low, conf.high)
+
+city_proportion_estimates
+```
+
+
+Create a plot that shows the estimates and CIs for each city – check out geom_errorbar for a way to add error bars based on the upper and lower limits. Organize cities according to the proportion of unsolved homicides.
+
+```{r}
+# create a plot and add error bars
+city_proportion_estimates %>%
+  ggplot(aes (y=fct_reorder(city_state, estimate), x=estimate)) + 
+  geom_bar(stat="identity", fill="pink") +
+  geom_errorbar(aes(xmin=conf.low, xmax =conf.high)) +
+  labs(x="Cities", y="Proportion of Unsolved Homicides")
+```
+
+
+
+
+
+
