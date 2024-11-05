@@ -13,7 +13,7 @@ library(ggplot2)
 
 
 # Problem 2
-Conduct a simulation to explore power in a one-sample t-test.
+Question: Conduct a simulation to explore power in a one-sample t-test.
 For each dataset, save 𝜇̂ and the p-value arising from a test of 𝐻:𝜇=0using 𝛼=0.05
 Hint: to obtain the estimate and p-value, use broom::tidy to clean the output of t.test.
 ```{r}
@@ -39,7 +39,7 @@ onesample_t_test_sim =
   unnest(ttest_output)
 ```
 
-Make a plot showing the proportion of times the null was rejected (the power of the test) on the y axis and the true value of 𝜇on the x axis. Describe the association between effect size and power.
+Question: Make a plot showing the proportion of times the null was rejected (the power of the test) on the y axis and the true value of 𝜇on the x axis. Describe the association between effect size and power.
 ```{r}
 onesample_t_test_sim %>%
   mutate(
@@ -58,7 +58,7 @@ Answers:
 We see a clear positive association between effect size and power. When the true value of μ is small, the power is low, meaning the test has a lower chance of detecting an effect and rejecting the null hypothesis. As μ increases, power rises as well, approaching 1 for higher values of μ. This trend indicates that with larger effect sizes, it becomes easier for the test to identify a difference from the null, leading to a higher probability of rejection. This behavior is expected in hypothesis testing; small effects are more challenging to detect due to their similarity to random noise, resulting in lower power. Conversely, as the effect size grows, the distinction from the null becomes more pronounced, allowing the test to detect the effect with greater accuracy, thus increasing power.
 
 
-Make a plot showing the average estimate of 𝜇̂ on the y axis and the true value of 𝜇on the x axis. Make a second plot (or overlay on the first) the average estimate of 𝜇̂ only in samples for which the null was rejected on the y axis and the true value of 𝜇on the x axis. Is the sample average of 𝜇̂ across tests for which the null is rejected approximately equal to the true value of 𝜇? Why or why not?
+Question: Make a plot showing the average estimate of 𝜇̂ on the y axis and the true value of 𝜇on the x axis. Make a second plot (or overlay on the first) the average estimate of 𝜇̂ only in samples for which the null was rejected on the y axis and the true value of 𝜇on the x axis. Is the sample average of 𝜇̂ across tests for which the null is rejected approximately equal to the true value of 𝜇? Why or why not?
 ```{r}
 onesample_t_test_summary = onesample_t_test_sim %>%
   mutate(
@@ -86,7 +86,7 @@ ggplot(onesample_t_test_summary, aes(x = mu)) +
   theme_minimal()
 ```
 Answer:
-
+The average estimate closely follows the true𝜇, indicating an unbiased estimate. However, for samples where the null was rejected, the average estimate of  𝜇̂is consistently higher than the true𝜇 , particularly at lower values.  Thus, the sample average across tests for which the null is rejected is not approximately equal to the true value of 𝜇. This is because when focusing only on tests that reject the null hypothesis, we introduce a selection bias that overrepresents larger observed effects, leading to an upward bias in the estimate of 𝜇.
 
 
 # Problem 3
@@ -98,6 +98,7 @@ homicide_data =
   janitor::clean_names()
 
 ```
+Answer:
 
 
 ```{r}
