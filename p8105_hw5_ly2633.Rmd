@@ -17,6 +17,7 @@ Question: Conduct a simulation to explore power in a one-sample t-test.
 For each dataset, save 𝜇̂ and the p-value arising from a test of 𝐻:𝜇=0using 𝛼=0.05
 Hint: to obtain the estimate and p-value, use broom::tidy to clean the output of t.test.
 ```{r}
+# Conduct a simulation to explore power in one-sample t-test
 onesample_t_test = function(mu){
   n=30
   sigma = 5
@@ -98,7 +99,8 @@ homicide_data =
   janitor::clean_names()
 
 ```
-Answer:
+A description of the raw data:
+The raw dataset contains 12 variables and 52179 observations. It includes information on homicide cases across the states. Each row corresponds to a unique case identified by a UID. The columns include the report date, victim’s last and first names, race, age, and sex, along with the city and state. Additional fields provide geographic coordinates (latitude and longitude) of the incident location and the case’s disposition status (e.g., "Closed by arrest," "Closed without arrest," "Open/No arrest"). Some victim ages are recorded as "Unknown," and a few entries lack latitude and longitude data. 
 
 
 ```{r}
@@ -130,6 +132,8 @@ total_counts
 
 For the city of Baltimore, MD, use the prop.test function to estimate the proportion of homicides that are unsolved; save the output of prop.test as an R object, apply the broom::tidy to this object and pull the estimated proportion and confidence intervals from the resulting tidy dataframe.
 ```{r}
+# Use the prop.test function to estimate the proportion of homicides that are unsolved
+# Estimated proportion and confidence intervals from the resulting tidy dataframe
 Baltimore_data = total_counts %>%
   filter(city_state == "Baltimore, MD")
 
@@ -138,6 +142,9 @@ prop.test(n = pull(Baltimore_data, totnumber_homicide),
   broom::tidy() %>%
   select(estimate, conf.low, conf.high)
 ```
+Answer:
+The estimate is 0.6455607 and the confidence interval is (0.6275625, 0.6631599).
+
 
 Now run prop.test for each of the cities in your dataset, and extract both the proportion of unsolved homicides and the confidence interval for each. Do this within a “tidy” pipeline, making use of purrr::map, purrr::map2, list columns and unnest as necessary to create a tidy dataframe with estimated proportions and CIs for each city.
 ```{r}
