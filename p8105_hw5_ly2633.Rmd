@@ -16,7 +16,7 @@ library(ggplot2)
 Question: Conduct a simulation to explore power in a one-sample t-test.
 For each dataset, save 𝜇̂ and the p-value arising from a test of 𝐻:𝜇=0using 𝛼=0.05
 Hint: to obtain the estimate and p-value, use broom::tidy to clean the output of t.test.
-```{r}
+```{r, cache=TRUE}
 # Conduct a simulation to explore power in one-sample t-test
 onesample_t_test = function(mu){
   n=30
@@ -51,9 +51,12 @@ onesample_t_test_sim %>%
   summarise(reject_count =n())%>%
   mutate(power = reject_count/5000)%>%
   ggplot(aes(x=mu, y=power))+
-  geom_point()+
-  geom_line()+
-  labs(x="Mean")
+  geom_point(size=0.4)+
+  geom_line(size=0.35)+
+  scale_x_continuous(breaks=0:6)+
+  scale_y_continuous(breaks=seq(0,1, by=0.05))+
+  labs(title="Plot of Power against True population mean", x="True mu", y="Power")+
+  theme(plot.title=element_text(hjust=0.5))
 ```
 Answers:
 We see a clear positive association between effect size and power. When the true value of μ is small, the power is low, meaning the test has a lower chance of detecting an effect and rejecting the null hypothesis. As μ increases, power rises as well, approaching 1 for higher values of μ. This trend indicates that with larger effect sizes, it becomes easier for the test to identify a difference from the null, leading to a higher probability of rejection. This behavior is expected in hypothesis testing; small effects are more challenging to detect due to their similarity to random noise, resulting in lower power. Conversely, as the effect size grows, the distinction from the null becomes more pronounced, allowing the test to detect the effect with greater accuracy, thus increasing power.
