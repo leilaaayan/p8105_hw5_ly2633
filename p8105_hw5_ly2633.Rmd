@@ -58,6 +58,8 @@ onesample_t_test_sim %>%
   labs(title="Plot of Power against True population mean", x="True mu", y="Power")+
   theme(plot.title=element_text(hjust=0.5))
 ```
+
+
 Answers:
 We see a clear positive association between effect size and power. When the true value of μ is small, the power is low, meaning the test has a lower chance of detecting an effect and rejecting the null hypothesis. As μ increases, power rises as well, approaching 1 for higher values of μ. This trend indicates that with larger effect sizes, it becomes easier for the test to identify a difference from the null, leading to a higher probability of rejection. This behavior is expected in hypothesis testing; small effects are more challenging to detect due to their similarity to random noise, resulting in lower power. Conversely, as the effect size grows, the distinction from the null becomes more pronounced, allowing the test to detect the effect with greater accuracy, thus increasing power.
 
@@ -89,6 +91,8 @@ ggplot(onesample_t_test_summary, aes(x = mu)) +
   ) +
   theme_minimal()
 ```
+
+
 Answer:
 The average estimate closely follows the true𝜇, indicating an unbiased estimate. However, for samples where the null was rejected, the average estimate of  𝜇̂is consistently higher than the true𝜇 , particularly at lower values.  Thus, the sample average across tests for which the null is rejected is not approximately equal to the true value of 𝜇. This is because when focusing only on tests that reject the null hypothesis, we introduce a selection bias that overrepresents larger observed effects, leading to an upward bias in the estimate of 𝜇.
 
@@ -102,6 +106,8 @@ homicide_data =
   janitor::clean_names()
 
 ```
+
+
 A description of the raw data:
 The raw dataset contains 12 variables and 52179 observations. It includes information on homicide cases across the states. Each row corresponds to a unique case identified by a UID. The columns include the report date, victim’s last and first names, race, age, and sex, along with the city and state. Additional fields provide geographic coordinates (latitude and longitude) of the incident location and the case’s disposition status (e.g., "Closed by arrest," "Closed without arrest," "Open/No arrest"). Some victim ages are recorded as "Unknown," and a few entries lack latitude and longitude data. 
 
@@ -145,11 +151,14 @@ prop.test(n = pull(Baltimore_data, totnumber_homicide),
   broom::tidy() %>%
   select(estimate, conf.low, conf.high)
 ```
+
+
 Answer:
 The estimate is 0.6455607 and the confidence interval is (0.6275625, 0.6631599).
 
 
 Now run prop.test for each of the cities in your dataset, and extract both the proportion of unsolved homicides and the confidence interval for each. Do this within a “tidy” pipeline, making use of purrr::map, purrr::map2, list columns and unnest as necessary to create a tidy dataframe with estimated proportions and CIs for each city.
+
 ```{r}
 # Run prop.test and create a tidy dataframe with estimated proportions and CIs for each city
 # Filter out rows with zero or missing values for homicide counts
