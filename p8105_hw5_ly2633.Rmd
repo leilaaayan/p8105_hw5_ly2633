@@ -2,7 +2,7 @@
 title: "p8105_hw5_ly2633"
 author: "Leila Yan"
 date: "2024-11-04"
-output: html_document
+output: github_document
 ---
 ```{r}
 # Load libraries
