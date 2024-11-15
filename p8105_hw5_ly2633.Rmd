@@ -98,7 +98,7 @@ The average estimate closely follows the true𝜇, indicating an unbiased estima
 
 
 # Problem 3
-Describe the raw data.
+
 ```{r}
 # load the data
 homicide_data = 
@@ -178,6 +178,7 @@ Create a plot that shows the estimates and CIs for each city – check out geom_
 
 ```{r}
 # create a plot and add error bars
+# Rank cities according to the proportion of unsolved homicides
 city_proportion_estimates <- city_proportion_estimates %>%
   arrange(desc(estimate)) %>%
   mutate(city_state = factor(city_state, levels = city_state))
